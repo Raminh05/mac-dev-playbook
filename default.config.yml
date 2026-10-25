@@ -1,8 +1,4 @@
 ---
-configure_dotfiles: true
-configure_terminal: true
-configure_osx: true
-
 # Set to 'true' to configure the Dock via dockutil.
 configure_dock: false
 dockitems_remove: []
@@ -11,9 +7,92 @@ dockitems_remove: []
 # - Podcasts
 # - 'App Store'
 dockitems_persist: []
-# - name: "Sublime Text"
-#   path: "/Applications/Sublime Text.app/"
+# - name: "Zed"
+#   path: "/Applications/Zed.app/"
 #   pos: 5
+
+# Dock auto-hide behavior (independent of configure_dock).
+configure_dock_settings: true
+dock_autohide: true
+# Seconds before the Dock starts to appear on hover (macOS default: 0.5).
+dock_autohide_delay: 0
+# Duration of the show/hide animation in seconds (macOS default: ~0.5).
+dock_autohide_time_modifier: 0.15
+# Enlarge Dock icons on hover.
+dock_magnification: true
+# Magnified icon size in points (16-128); keep it a bit above the icon size.
+dock_magnification_size: 72
+
+# Force the system appearance to Dark mode (applies after logging out and in).
+configure_appearance: true
+dark_mode: true
+
+# Remove preinstalled Apple apps from /Applications (app names without .app).
+configure_debloat: true
+apple_apps_remove:
+  - GarageBand
+  - iMovie
+  - Keynote
+  - Numbers
+  - Pages
+
+# Make fish the login shell and install its config from files/fish.
+configure_fish: true
+fish_path: /opt/homebrew/bin/fish
+
+# Install Zed settings from files/zed.
+configure_zed: true
+
+# Set up Rust via Homebrew's rustup (toolchains live in ~/.rustup).
+configure_rust: true
+rust_default_toolchain: stable
+rust_components:
+  - rust-analyzer
+  - rust-src
+rustup_bin_dir: /opt/homebrew/opt/rustup/bin
+
+# Python versions to install with uv (lands in ~/.local/bin).
+configure_python: true
+uv_python_versions:
+  - "3.15"
+
+# Global git identity and settings (written to ~/.gitconfig).
+configure_git: true
+git_user_name: Minh Nguyen
+git_user_email: binhminh.nguyen05@gmail.com
+git_global_config:
+  init.defaultBranch: main
+  push.autoSetupRemote: "true"
+  pull.rebase: "true"
+  fetch.prune: "true"
+  rerere.enabled: "true"
+  diff.algorithm: histogram
+
+# Install ~/.ssh/config from files/ssh (keys come from Bitwarden's SSH agent).
+configure_ssh: true
+
+# Use Touch ID to authorize sudo.
+configure_touchid_sudo: true
+
+# Developer-friendly macOS settings: fast key repeat, no accent popup when
+# holding a key, no smart quotes/dashes or autocorrect; Finder shows extensions, hidden files, path bar and status bar,
+# uses list view, searches the current folder and empties old Trash items; no
+# .DS_Store on network and USB volumes.
+configure_macos_dev: true
+
+# Keep rebuildable files out of Time Machine: asimov handles project folders
+# and common caches; these toolchain folders are excluded directly.
+configure_timemachine: true
+timemachine_exclusions:
+  - ~/.cargo/registry
+  - ~/.rustup
+  - ~/.bun/install/cache
+  - ~/.local/share/uv/python
+
+# Volumes to keep Spotlight from indexing (skipped when not mounted).
+configure_spotlight: true
+spotlight_disabled_volumes:
+  - /Volumes/secrets
 
 configure_sudoers: false
 sudoers_custom_config: ""
@@ -22,67 +101,135 @@ sudoers_custom_config: ""
 #   # Allow users in admin group to use sudo with no password.
 #   %admin ALL=(ALL) NOPASSWD: ALL
 
-dotfiles_repo: https://github.com/geerlingguy/dotfiles.git
-dotfiles_repo_accept_hostkey: true
-dotfiles_repo_local_destination: ~/Development/GitHub/dotfiles
-dotfiles_repo_version: master # Replace with your default branch
-dotfiles_files:
-  - .zshrc
-  - .gitignore
-  - .inputrc
-  - .osx
-  - .vimrc
-
-homebrew_installed_packages:
-  # - ansible # Installed via Pip.
-  - autoconf
-  - bash-completion
-  - doxygen
-  - gettext
-  - gifsicle
-  - git
-  - gh
-  - go
-  - gpg
-  - httpie
-  - iperf
-  - libevent
-  - sqlite
-  - nmap
-  - node
-  - nvm
-  - php
-  - pngpaste
-  - ssh-copy-id
-  - readline
-  - openssl
-  - pv
-  - wget
-  - wrk
-  - zsh-history-substring-search
+# Homebrew itself is installed by the geerlingguy.mac.homebrew role. These two
+# lists are for one-off extras; categorized installs are below.
+homebrew_installed_packages: []
 
 homebrew_taps: []
 
 homebrew_cask_appdir: /Applications
-homebrew_cask_apps:
-  - chromedriver
-  - docker
-  - dropbox
-  - firefox
-  - google-chrome
-  - handbrake
-  - licecap
-  - sequel-ace
-  - slack
-  - sublime-text
-  - transmit
+homebrew_cask_apps: []
+
+# Categorized Homebrew installs, all installed together (`--tags homebrew`).
+# Every variable named brew_<category> is picked up automatically, so a new
+# category only needs defining (here or in config.yml). `packages` are formulae,
+# `casks` are apps. Override a whole category in config.yml to change it, or set
+# it to {} to skip it.
+brew_dev:
+  packages:
+    - bun
+    - cmake
+    - gh
+    - git
+    - hidapi
+    - libpq
+    - opencode
+    - python@3.15
+    - rustup
+    - uv
+  casks:
+    - bruno
+    - claude-code@latest
+    # .NET SDK (currently 10.x); includes the ASP.NET Core runtime.
+    - dotnet-sdk
+    - orbstack
+    - rider
+    - termius
+    - webstorm
+    - xquartz
+    - zed
+
+brew_shell:
+  packages:
+    - btop
+    - bat
+    - fastfetch
+    - fish
+    - starship
+  casks:
+    # System monitor in the menu bar.
+    - stats
+
+brew_networking:
+  packages:
+    - iperf3
+    - nmap
+  casks:
+    - tailscale-app
+
+brew_media:
+  packages:
+    - ffmpeg
+    - yt-dlp
+  casks:
+    - handbrake-app
+    - music-presence
+    - vlc
+
+# MakeMKV's Homebrew cask is disabled, so it's installed from makemkv.com (see
+# tasks/direct-app.yml). Set to {} to skip.
+direct_app_makemkv:
+  name: MakeMKV
+  url: https://www.makemkv.com/download/makemkv_v1.18.4_osx.dmg
+  sha256: e3adad095fb9344e23870d99fd9770a187816332c5a2aa1b226c0bd4a922867a
+  archive: dmg
+
+# Lightroom Classic isn't on Homebrew: sign in to Creative Cloud and install it
+# from there.
+brew_photography:
+  casks:
+    - adobe-creative-cloud
+
+# Activate by signing in with a Microsoft 365 account on first launch.
+brew_office:
+  casks:
+    - microsoft-excel
+    - microsoft-outlook
+    - microsoft-powerpoint
+    - microsoft-teams
+    - microsoft-word
+
+brew_gaming:
+  casks:
+    - crossover
+    - dolphin
+    - steam
+    - virtual-desktop-streamer
+
+# melonDS's Homebrew cask is disabled, so it's installed from GitHub (see
+# tasks/direct-app.yml). Set to {} to skip.
+direct_app_melonds:
+  name: melonDS
+  url: https://github.com/melonDS-emu/melonDS/releases/download/1.1/melonDS-1.1-macOS-universal.zip
+  sha256: 79843a5e5cab93188bd11942bff5440b9505ee91c6f526f7e90c22e3cff6718d
+  archive: zip
+
+# 3D printing and hardware tinkering.
+brew_maker:
+  casks:
+    - elegoo-slicer
+    - raspberry-pi-imager
+
+brew_personal:
+  casks:
+    - bitwarden
+    - claude
+    - discord
+    - ungoogled-chromium
+
+# Steam (gaming) is Intel-only, so install Rosetta 2 first on Apple silicon.
+install_rosetta: true
+
+# Apps whose Homebrew casks are disabled, installed from their developers
+# (see tasks/direct-app.yml and the direct_app_* entries above).
+direct_apps:
+  - "{{ direct_app_makemkv }}"
+  - "{{ direct_app_melonds }}"
 
 # See `geerlingguy.mac.mas` role documentation for usage instructions.
 mas_installed_apps: []
 mas_email: ""
 mas_password: ""
-
-osx_script: "~/.osx --no-restart"
 
 # Install packages from other package managers.
 # Note: You are responsible for making sure the required package managers are
@@ -103,24 +250,6 @@ pip_packages: []
 # - name: mkdocs
 #   state: present # present/absent/latest, default: present
 #   version: "0.16.3" # default: N/A
-
-# Set to 'true' to configure Sublime Text.
-configure_sublime: false
-sublime_base_path: "~/Library/Application Support/Sublime Text"
-sublime_config_path: "Packages/User"
-sublime_package_control:
-  - "DocBlockr"
-  - "Dockerfile Syntax Highlighting"
-  - "FileDiffs"
-  - "GitHub Flavored Markdown Preview"
-  - "Jinja2"
-  - "Package Control"
-  - "Pretty JSON"
-  - "SublimeLinter"
-  - "SublimeLinter-contrib-yamllint"
-  - "Theme - Cobalt2"
-  - "TrailingSpaces"
-  - "WordingStatus"
 
 # Glob pattern to ansible task files to run after all other tasks are finished.
 post_provision_tasks: []

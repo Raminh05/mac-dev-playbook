@@ -1,166 +1,144 @@
-<img src="https://raw.githubusercontent.com/geerlingguy/mac-dev-playbook/master/files/Mac-Dev-Playbook-Logo.png" width="250" height="156" alt="Mac Dev Playbook Logo" />
-
 # Mac Development Ansible Playbook
 
-[![CI][badge-gh-actions]][link-gh-actions]
-
-This playbook installs and configures most of the software I use on my Mac for web and software development. Some things in macOS are slightly difficult to automate, so I still have a few manual installation steps, but at least it's all documented here.
+This playbook installs and configures the software and macOS settings I use for development on my Mac.
 
 ## Installation
 
-  1. Ensure Apple's command line tools are installed (`xcode-select --install` to launch the installer).
-  2. [Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/index.html):
+On a fresh Mac, open Terminal and run these in order:
 
-     1. Run the following command to add Python 3 to your $PATH: `export PATH="$HOME/Library/Python/3.9/bin:/opt/homebrew/bin:$PATH"`
-     2. Upgrade Pip: `sudo pip3 install --upgrade pip`
-     3. Install Ansible: `pip3 install ansible`
+  1. Install Apple's Command Line Tools (provides `git`), and wait for the installer to finish:
 
-  3. Clone or download this repository to your local drive.
-  4. Run `ansible-galaxy install -r requirements.yml` inside this directory to install required Ansible roles.
-  5. Run `ansible-playbook main.yml --ask-become-pass` inside this directory. Enter your macOS account password when prompted for the 'BECOME' password.
+         xcode-select --install
+
+  2. Install [Homebrew](https://brew.sh), then add it to this Terminal session's `PATH`:
+
+         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+         eval "$(/opt/homebrew/bin/brew shellenv)"
+
+  3. Install Ansible with Homebrew. (Don't use `pip3`: on a fresh Mac it's Apple's Python 3.9, which can only install an Ansible too old for this playbook's collections.)
+
+         brew install ansible
+
+  4. Clone this repository over HTTPS (SSH keys aren't available until Bitwarden is set up):
+
+         git clone https://github.com/Raminh05/mac-dev-playbook.git ~/Developer/mac-dev-playbook
+         cd ~/Developer/mac-dev-playbook
+
+  5. Install the required Ansible roles and collections:
+
+         ansible-galaxy install -r requirements.yml
+
+  6. Plug in the `secrets` dev drive (so Spotlight indexing gets turned off on it), then run the playbook. It asks for your macOS account password once at the start (used for `sudo`, including app installers that need it):
+
+         ansible-playbook main.yml
+
+  7. Do the [manual steps after setup](#manual-steps-after-setup), then log out and back in.
 
 > Note: If some Homebrew commands fail, you might need to agree to Xcode's license or fix some other Brew issue. Run `brew doctor` to see if this is the case.
 
 ### Use with a remote Mac
 
-You can use this playbook to manage other Macs as well; the playbook doesn't even need to be run from a Mac at all! If you want to manage a remote Mac, either another Mac on your network, or a hosted Mac like the ones from [MacStadium](https://www.macstadium.com), you just need to make sure you can connect to it with SSH:
-
-  1. (On the Mac you want to connect to:) Go to System Settings > Sharing.
-  2. Enable 'Remote Login'.
-
-> You can also enable remote login on the command line:
->
->     sudo systemsetup -setremotelogin on
-
-Then edit the `inventory` file in this repository and change the line that starts with `127.0.0.1` to:
+To manage another Mac over SSH, enable Remote Login on it (System Settings > Sharing, or `sudo systemsetup -setremotelogin on`), then edit the `inventory` file and change the line that starts with `127.0.0.1` to:
 
 ```
 [ip address or hostname of mac]  ansible_user=[mac ssh username]
 ```
 
-If you need to supply an SSH password (if you don't use SSH keys), make sure to pass the `--ask-pass` parameter to the `ansible-playbook` command.
+If you need to supply an SSH password (if you don't use SSH keys), pass `--ask-pass` to `ansible-playbook`.
 
 ### Running a specific set of tagged tasks
 
-You can filter which part of the provisioning process to run by specifying a set of tags using `ansible-playbook`'s `--tags` flag. The tags available are `dotfiles`, `homebrew`, `mas`, `extra-packages` and `osx`.
+You can run only part of the playbook with `--tags`. The tags available are:
 
-    ansible-playbook main.yml -K --tags "dotfiles,homebrew"
+  - `homebrew`: Homebrew itself plus every app and package category below
+  - `macos`: Dock, appearance, developer-friendly settings and removing Apple's preinstalled apps
+  - `fish`, `zed`, `rust`, `python`, `git`, `ssh`, `touchid`, `timemachine`, `spotlight`
+  - `mas`, `dock` (Dock items via dockutil, off by default), `sudoers`, `extra-packages` and `post`
+
+Each tag can run on its own, even as the first run on a fresh Mac: any tag that needs Homebrew installs it first, and `fish`, `rust`, `python` and `timemachine` install the tool they need themselves. For example:
+
+    ansible-playbook main.yml --tags "macos,fish"
 
 ## Overriding Defaults
 
-Not everyone's development environment and preferred software configuration is the same.
-
-You can override any of the defaults configured in `default.config.yml` by creating a `config.yml` file and setting the overrides in that file. For example, you can customize the installed packages and apps with something like:
+You can override any of the defaults in `default.config.yml` by creating a `config.yml` file and setting the overrides there. For example:
 
 ```yaml
-homebrew_installed_packages:
-  - git
-  - go
+# Replace a whole category (both its packages and casks).
+brew_media:
+  packages:
+    - ffmpeg
+  casks:
+    - vlc
 
-mas_installed_apps:
-  - { id: 443987910, name: "1Password" }
-  - { id: 498486288, name: "Quick Resizer" }
-  - { id: 557168941, name: "Tweetbot" }
-  - { id: 497799835, name: "Xcode" }
+# Skip a category entirely.
+brew_personal: {}
 
-composer_packages:
-  - name: hirak/prestissimo
-  - name: drush/drush
-    version: '^8.1'
+# Add a new category: any variable named brew_<name> is installed automatically.
+brew_fonts:
+  casks:
+    - font-jetbrains-mono
 
-gem_packages:
-  - name: bundler
-    state: latest
-
-npm_packages:
-  - name: webpack
-
-pip_packages:
-  - name: mkdocs
-
-configure_dock: true
-dockitems_remove:
-  - Launchpad
-  - TV
-dockitems_persist:
-  - name: "Sublime Text"
-    path: "/Applications/Sublime Text.app/"
-    pos: 5
+dock_magnification_size: 80
+dark_mode: false
 ```
 
-Any variable can be overridden in `config.yml`; see the supporting roles' documentation for a complete list of available variables.
+Skipping `brew_media` or `brew_gaming` doesn't skip the apps that come from their developers rather than Homebrew, or Rosetta 2; set `direct_app_makemkv: {}`, `direct_app_melonds: {}` or `install_rosetta: false` for those.
 
-## Included Applications / Configuration (Default)
+See the [geerlingguy.mac](https://github.com/geerlingguy/ansible-collection-mac) collection's documentation for the Homebrew, Mac App Store and Dock role variables.
 
-Applications (installed with Homebrew Cask):
+## What gets set up (default)
 
-  - [ChromeDriver](https://sites.google.com/chromium.org/driver/)
-  - [Docker](https://www.docker.com/)
-  - [Dropbox](https://www.dropbox.com/)
-  - [Firefox](https://www.mozilla.org/en-US/firefox/new/)
-  - [Google Chrome](https://www.google.com/chrome/)
-  - [Handbrake](https://handbrake.fr/)
-  - [Homebrew](http://brew.sh/)
-  - [LICEcap](http://www.cockos.com/licecap/)
-  - [nvALT](http://brettterpstra.com/projects/nvalt/)
-  - [Sequel Ace](https://sequel-ace.com) (MySQL client)
-  - [Slack](https://slack.com/)
-  - [Sublime Text](https://www.sublimetext.com/)
-  - [Transmit](https://panic.com/transmit/) (S/FTP client)
+Everything is installed with Homebrew (`--tags homebrew`), grouped into `brew_<category>` variables in `default.config.yml` (see [Overriding Defaults](#overriding-defaults) to change, skip or add categories).
 
-Packages (installed with Homebrew):
+| Category | Packages | Apps |
+|---|---|---|
+| `dev` | bun, cmake, gh, git, hidapi, libpq, opencode, python@3.15, rustup, uv | Bruno, Claude Code, .NET SDK 10 (includes ASP.NET Core), OrbStack, Rider, Termius, WebStorm, XQuartz, Zed |
+| `shell` | bat, btop, fastfetch, fish, starship | Stats |
+| `networking` | iperf3, nmap | Tailscale |
+| `media` | ffmpeg, yt-dlp | HandBrake, MakeMKV (from makemkv.com, not Homebrew), Music Presence, VLC |
+| `photography` | | Adobe Creative Cloud (install Lightroom Classic from it after signing in) |
+| `office` | | Excel, Outlook, PowerPoint, Teams, Word |
+| `gaming` | | CrossOver, Dolphin, melonDS (from GitHub, not Homebrew), Steam, Virtual Desktop Streamer (Rosetta 2 is installed first on Apple silicon) |
+| `maker` | | ElegooSlicer, Raspberry Pi Imager |
+| `personal` | | Bitwarden, Claude, Discord, Ungoogled Chromium |
 
-  - autoconf
-  - bash-completion
-  - doxygen
-  - gettext
-  - gifsicle
-  - git
-  - gh
-  - go
-  - gpg
-  - httpie
-  - iperf
-  - libevent
-  - sqlite
-  - nmap
-  - node
-  - nvm
-  - php
-  - ssh-copy-id
-  - readline
-  - openssl
-  - pv
-  - wget
-  - wrk
-  - zsh-history-substring-search
+Shell: fish is set as the login shell, and its config and functions are installed from `files/fish`. The prompt is [starship](https://starship.rs).
 
-My [dotfiles](https://github.com/geerlingguy/dotfiles) are also installed into the current user's home directory, including the `.osx` dotfile for configuring many aspects of macOS for better performance and ease of use. You can disable dotfiles management by setting `configure_dotfiles: no` in your configuration.
+Git: identity and settings (`main` default branch, `push.autoSetupRemote`, `pull.rebase`, `fetch.prune`, `rerere`, histogram diffs) are set in `~/.gitconfig`, and a global ignore file is installed from `files/git/ignore`.
 
-Finally, there are a few other preferences and settings added on for various apps and services.
+SSH: `~/.ssh/config` is installed from `files/ssh/config` and points every host at Bitwarden's SSH agent, so keys live in your Bitwarden vault instead of on disk.
 
-## Full / From-scratch setup guide
+Rust and Python: Homebrew's rustup installs the stable Rust toolchain with `rust-analyzer` and `rust-src`, and sets stable as the default on every run (change `rust_default_toolchain` to keep another default). uv installs Python 3.15 into `~/.local/bin`, which comes first in the fish `PATH`, so `python3.15` is uv's copy rather than Homebrew's. Homebrew's own tools come before Apple's (`/usr/bin`), so `git` is Homebrew's.
 
-Since I've used this playbook to set up something like 20 different Macs, I decided to write up a full 100% from-scratch install for my own reference (everyone's particular install will be slightly different).
+Zed: settings are installed from `files/zed/settings.json`: format on save (ESLint fixes then Prettier for TypeScript/JavaScript; ruff for Python), basedpyright and ruff for Python, clippy for Rust, a fish terminal, and the C#, Docker, Docker Compose, fish, HTML, SQL, TOML and XML extensions.
 
-You can see my full from-scratch setup document here: [full-mac-setup.md](full-mac-setup.md).
+> These files are managed by the playbook: `~/.config/fish/config.fish` and `functions/`, Zed's `settings.json`, `~/.ssh/config` and `~/.config/git/ignore` (from `files/`), plus the generated `~/.config/fish/conf.d/homebrew-rustup.fish`. When their tag runs (`fish`, `zed`, `ssh`, `git`, `rust`) and the content differs, they're replaced, with a timestamped backup kept next to each copied file. Make changes in `files/` in this repo, not in the apps, or turn the matching `configure_*` setting off.
 
-## Testing the Playbook
+macOS settings:
 
-Many people have asked me if I often wipe my entire workstation and start from scratch just to test changes to the playbook. Nope! This project is [continuously tested on GitHub Actions' macOS infrastructure](https://github.com/geerlingguy/mac-dev-playbook/actions?query=workflow%3ACI).
+  - Dock auto-hides with no delay and a fast animation
+  - Dock icons magnify slightly on hover
+  - Dark mode, with automatic Light/Dark switching disabled
+  - Fast key repeat (and no accent popup on hold); smart quotes, smart dashes and autocorrect off
+  - Finder shows file extensions, hidden files, the path bar and the status bar; uses list view by default; searches the current folder by default; empties Trash items after 30 days; no `.DS_Store` files on network or USB volumes
+  - Touch ID for `sudo` (via `/etc/pam.d/sudo_local`, which survives macOS updates)
+  - Time Machine skips rebuildable files: [asimov](https://github.com/AsimovMac/asimov) excludes project folders (`node_modules`, Rust `target`, `.venv`, .NET `bin`/`obj`) and common caches daily, and Rust/bun/uv toolchain folders are excluded directly
+  - Spotlight doesn't index `/Volumes/secrets` (the setting is stored on the drive; only applied while it's mounted)
+  - Removes Apple's GarageBand (and its sound library), iMovie, Keynote, Numbers and Pages if present. Built-in apps in `/System/Applications` (Safari, Music, News, etc.) are protected by macOS and can't be removed.
 
-You can also run macOS itself inside a VM, for at least some of the required testing (App Store apps and some proprietary software might not install properly). I currently recommend:
+## Manual steps after setup
 
-  - [UTM](https://mac.getutm.app)
-  - [Tart](https://github.com/cirruslabs/tart)
+Some things can't be automated reliably, so do these by hand after the playbook runs:
 
-## Ansible for DevOps
+  - **Finder sidebar:** open Finder > Settings > Sidebar and make sure **AirDrop** (under Favorites) and your **Mac's name** (under Locations; this is the "Computer" item) are checked. The sidebar item list lives in binary files whose format changes between macOS versions, so the playbook doesn't touch it.
+  - **Bitwarden SSH agent:** sign in to Bitwarden, then turn on Settings > **Enable SSH agent**. Your SSH keys need to be in the vault (as SSH key items).
+  - **Push access to this repo:** once the Bitwarden SSH agent is on, switch the clone from HTTPS to SSH: `git -C ~/Developer/mac-dev-playbook remote set-url origin git@github.com:Raminh05/mac-dev-playbook.git`
+  - **Keyboard settings:** log out and back in for the key repeat settings to take effect.
+  - **Spotlight on the dev drive:** if `/Volumes/secrets` wasn't plugged in during setup, plug it in and run `ansible-playbook main.yml --tags spotlight` once.
+  - **Lightroom Classic:** sign in to Adobe Creative Cloud and install it from there.
+  - **Microsoft Office:** open Word (or any Office app) and sign in with your Microsoft 365 account to activate the suite.
 
-Check out [Ansible for DevOps](https://www.ansiblefordevops.com/), which teaches you how to automate almost anything with Ansible.
+## Credits
 
-## Author
-
-This project was created by [Jeff Geerling](https://www.jeffgeerling.com/) (originally inspired by [MWGriffin/ansible-playbooks](https://github.com/MWGriffin/ansible-playbooks)).
-
-[badge-gh-actions]: https://github.com/geerlingguy/mac-dev-playbook/actions/workflows/ci.yml/badge.svg
-[link-gh-actions]: https://github.com/geerlingguy/mac-dev-playbook/actions/workflows/ci.yml
+Forked from [geerlingguy/mac-dev-playbook](https://github.com/geerlingguy/mac-dev-playbook) by [Jeff Geerling](https://www.jeffgeerling.com/), originally inspired by [MWGriffin/ansible-playbooks](https://github.com/MWGriffin/ansible-playbooks).

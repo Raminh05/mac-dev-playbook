@@ -1,6 +1,8 @@
 ---
 exclude_paths:
+  # Third-party roles and collections installed by ansible-galaxy/ansible-lint.
   - roles/elliotweiser.osx-command-line-tools
+  - .ansible/
 
 skip_list:
   - schema[meta]

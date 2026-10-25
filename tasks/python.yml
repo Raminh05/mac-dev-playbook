@@ -1,0 +1,12 @@
+---
+# Also listed in brew_dev; installed here so `--tags python` works alone.
+- name: Ensure uv is installed.
+  community.general.homebrew:
+    name: uv
+    state: present
+
+- name: Install Python versions with uv.
+  command: "/opt/homebrew/bin/uv python install {{ item }}"
+  loop: "{{ uv_python_versions }}"
+  register: uv_python_install
+  changed_when: "'already installed' not in uv_python_install.stderr"

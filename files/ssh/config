@@ -1,0 +1,16 @@
+# Managed by mac-dev-playbook (files/ssh/config).
+
+# OrbStack: 'orb' SSH host for Linux machines. Must be before any Host blocks.
+Include ~/.orbstack/ssh/config
+
+# Keys come from Bitwarden's SSH agent (Bitwarden > Settings > Enable SSH agent).
+# The app must be running and unlocked; it asks to approve each key use.
+Host *
+	IdentityAgent ~/.bitwarden-ssh-agent.sock
+
+Host github.com
+	User git
+
+Host discpi
+	HostName discpi.local
+	User minh

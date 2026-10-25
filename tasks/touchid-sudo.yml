@@ -1,0 +1,12 @@
+---
+# sudo_local is included by /etc/pam.d/sudo and survives macOS updates.
+- name: Enable Touch ID for sudo.
+  copy:
+    dest: /etc/pam.d/sudo_local
+    content: |
+      # Managed by mac-dev-playbook.
+      auth       sufficient     pam_tid.so
+    owner: root
+    group: wheel
+    mode: "0444"
+  become: true

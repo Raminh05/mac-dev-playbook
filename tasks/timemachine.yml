@@ -1,0 +1,37 @@
+---
+# asimov excludes rebuildable project folders (node_modules, Rust target,
+# Python .venv, .NET bin/obj, ...) and common caches (~/.cache, ~/.npm,
+# ~/.nuget). It runs daily as a Homebrew service.
+- name: Ensure asimov is installed.
+  community.general.homebrew:
+    name: asimov
+    state: present
+
+- name: Check asimov service status.
+  command: /opt/homebrew/bin/brew services info asimov --json
+  register: asimov_service
+  changed_when: false
+
+- name: Start asimov service.
+  command: /opt/homebrew/bin/brew services start asimov
+  # Scheduled (daily) service, so check `loaded` rather than `running`.
+  when: not (asimov_service.stdout | from_json)[0].loaded
+
+# Toolchain folders asimov doesn't cover. Created up front so the (sticky)
+# exclusion is in place before they fill up.
+- name: Exclude toolchain folders from Time Machine.
+  shell: |
+    set -o pipefail
+    mkdir -p "{{ tm_path }}"
+    if tmutil isexcluded "{{ tm_path }}" | grep -q '\[Excluded\]'; then
+      echo unchanged
+    else
+      tmutil addexclusion "{{ tm_path }}"
+    fi
+  args:
+    executable: /bin/bash
+  vars:
+    tm_path: "{{ item | regex_replace('^~', ansible_env.HOME) }}"
+  loop: "{{ timemachine_exclusions }}"
+  register: tm_exclusions
+  changed_when: "'unchanged' not in tm_exclusions.stdout"
