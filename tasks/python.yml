@@ -1,5 +1,5 @@
 ---
-# Also listed in homebrew_dev; installed here so `--tags python` works alone.
+# Also listed in brew_dev; installed here so `--tags python` works alone.
 - name: Ensure uv is installed.
   community.general.homebrew:
     name: uv

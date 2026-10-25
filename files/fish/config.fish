@@ -7,11 +7,12 @@ set -gx CARGO_INCREMENTAL 0
 set -gx CYCLONE_CATALOG /Volumes/secrets/NTP/cyclone-data/cyclone.sqlite
 set -gx CYCLONE_ZARR_ROOT /Volumes/secrets/NTP/cyclone-data/zarr
 
+# macOS puts /usr/bin ahead of Homebrew, so move Homebrew to the front (so its
+# git etc. win over Apple's), with uv-installed Pythons and tools ahead of that.
+fish_add_path --path --move --prepend $HOME/.local/bin /opt/homebrew/bin /opt/homebrew/sbin
 # cargo-installed binaries; appended so Homebrew's rustup proxies win.
 fish_add_path --path --append --move $HOME/.cargo/bin
 fish_add_path --path --append /opt/homebrew/opt/libpq/bin
-# uv-installed Pythons and tools.
-fish_add_path --path --append $HOME/.local/bin
 
 # SSH keys come from Bitwarden's SSH agent (also set in ~/.ssh/config).
 set -gx SSH_AUTH_SOCK $HOME/.bitwarden-ssh-agent.sock

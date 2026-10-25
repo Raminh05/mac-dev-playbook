@@ -74,9 +74,10 @@ configure_ssh: true
 # Use Touch ID to authorize sudo.
 configure_touchid_sudo: true
 
-# Developer-friendly macOS settings: fast key repeat, no smart quotes/dashes or
-# autocorrect, Finder shows extensions/hidden files/path bar, no .DS_Store on
-# network and USB volumes.
+# Developer-friendly macOS settings: fast key repeat, no accent popup when
+# holding a key, no smart quotes/dashes or autocorrect; Finder shows extensions, hidden files, path bar and status bar,
+# uses list view, searches the current folder and empties old Trash items; no
+# .DS_Store on network and USB volumes.
 configure_macos_dev: true
 
 # Keep rebuildable files out of Time Machine: asimov handles project folders
@@ -110,10 +111,11 @@ homebrew_cask_appdir: /Applications
 homebrew_cask_apps: []
 
 # Categorized Homebrew installs, all installed together (`--tags homebrew`).
-# `packages` are formulae, `casks` are apps. Override a whole category in
-# config.yml to change it, or set it to {} to skip it. To add a category, also
-# add it to homebrew_categories below.
-homebrew_dev:
+# Every variable named brew_<category> is picked up automatically, so a new
+# category only needs defining (here or in config.yml). `packages` are formulae,
+# `casks` are apps. Override a whole category in config.yml to change it, or set
+# it to {} to skip it.
+brew_dev:
   packages:
     - bun
     - cmake
@@ -137,7 +139,7 @@ homebrew_dev:
     - xquartz
     - zed
 
-homebrew_shell:
+brew_shell:
   packages:
     - btop
     - bat
@@ -148,14 +150,14 @@ homebrew_shell:
     # System monitor in the menu bar.
     - stats
 
-homebrew_networking:
+brew_networking:
   packages:
     - iperf3
     - nmap
   casks:
     - tailscale-app
 
-homebrew_media:
+brew_media:
   packages:
     - ffmpeg
     - yt-dlp
@@ -174,12 +176,12 @@ direct_app_makemkv:
 
 # Lightroom Classic isn't on Homebrew: sign in to Creative Cloud and install it
 # from there.
-homebrew_photography:
+brew_photography:
   casks:
     - adobe-creative-cloud
 
 # Activate by signing in with a Microsoft 365 account on first launch.
-homebrew_office:
+brew_office:
   casks:
     - microsoft-excel
     - microsoft-outlook
@@ -187,7 +189,7 @@ homebrew_office:
     - microsoft-teams
     - microsoft-word
 
-homebrew_gaming:
+brew_gaming:
   casks:
     - crossover
     - dolphin
@@ -203,29 +205,17 @@ direct_app_melonds:
   archive: zip
 
 # 3D printing and hardware tinkering.
-homebrew_maker:
+brew_maker:
   casks:
     - elegoo-slicer
     - raspberry-pi-imager
 
-homebrew_personal:
+brew_personal:
   casks:
     - bitwarden
     - claude
     - discord
     - ungoogled-chromium
-
-# Every category above, installed in one pass by tasks/homebrew-apps.yml.
-homebrew_categories:
-  - "{{ homebrew_dev }}"
-  - "{{ homebrew_shell }}"
-  - "{{ homebrew_networking }}"
-  - "{{ homebrew_media }}"
-  - "{{ homebrew_photography }}"
-  - "{{ homebrew_office }}"
-  - "{{ homebrew_gaming }}"
-  - "{{ homebrew_maker }}"
-  - "{{ homebrew_personal }}"
 
 # Steam (gaming) is Intel-only, so install Rosetta 2 first on Apple silicon.
 install_rosetta: true

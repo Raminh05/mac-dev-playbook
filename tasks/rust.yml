@@ -1,5 +1,5 @@
 ---
-# Also listed in homebrew_dev; installed here so `--tags rust` works alone.
+# Also listed in brew_dev; installed here so `--tags rust` works alone.
 # rustup is keg-only, so its bin dir must be added to PATH explicitly.
 - name: Ensure rustup is installed.
   community.general.homebrew:

@@ -1,5 +1,5 @@
 ---
-# Also listed in homebrew_shell; installed here so `--tags fish` works alone.
+# Also listed in brew_shell; installed here so `--tags fish` works alone.
 - name: Ensure fish is installed.
   community.general.homebrew:
     name: fish

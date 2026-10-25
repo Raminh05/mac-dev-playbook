@@ -1,5 +1,5 @@
 ---
-# git and gh are installed by Homebrew (see homebrew_dev).
+# git and gh are installed by Homebrew (see brew_dev).
 - name: Configure git identity.
   community.general.git_config:
     scope: global
@@ -28,3 +28,4 @@
     src: files/git/ignore
     dest: "{{ ansible_env.HOME }}/.config/git/ignore"
     mode: "0644"
+    backup: true

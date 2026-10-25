@@ -64,29 +64,36 @@ Each tag can run on its own, even as the first run on a fresh Mac: any tag that 
 You can override any of the defaults in `default.config.yml` by creating a `config.yml` file and setting the overrides there. For example:
 
 ```yaml
-# Replaces the whole category (both packages and casks).
-homebrew_media:
+# Replace a whole category (both its packages and casks).
+brew_media:
   packages:
     - ffmpeg
   casks:
     - vlc
 
 # Skip a category entirely.
-homebrew_personal: {}
+brew_personal: {}
+
+# Add a new category: any variable named brew_<name> is installed automatically.
+brew_fonts:
+  casks:
+    - font-jetbrains-mono
 
 dock_magnification_size: 80
 dark_mode: false
 ```
 
+Skipping `brew_media` or `brew_gaming` doesn't skip the apps that come from their developers rather than Homebrew, or Rosetta 2; set `direct_app_makemkv: {}`, `direct_app_melonds: {}` or `install_rosetta: false` for those.
+
 See the [geerlingguy.mac](https://github.com/geerlingguy/ansible-collection-mac) collection's documentation for the Homebrew, Mac App Store and Dock role variables.
 
 ## What gets set up (default)
 
-Everything is installed with Homebrew (`--tags homebrew`), grouped into categories in `default.config.yml`. To skip a category, set it to `{}` in `config.yml`.
+Everything is installed with Homebrew (`--tags homebrew`), grouped into `brew_<category>` variables in `default.config.yml` (see [Overriding Defaults](#overriding-defaults) to change, skip or add categories).
 
 | Category | Packages | Apps |
 |---|---|---|
-| `dev` | bun, cmake, hidapi, libpq, opencode, python@3.15, rustup, uv | Bruno, Claude Code, .NET SDK 10 (includes ASP.NET Core), OrbStack, Rider, Termius, WebStorm, XQuartz, Zed |
+| `dev` | bun, cmake, gh, git, hidapi, libpq, opencode, python@3.15, rustup, uv | Bruno, Claude Code, .NET SDK 10 (includes ASP.NET Core), OrbStack, Rider, Termius, WebStorm, XQuartz, Zed |
 | `shell` | bat, btop, fastfetch, fish, starship | Stats |
 | `networking` | iperf3, nmap | Tailscale |
 | `media` | ffmpeg, yt-dlp | HandBrake, MakeMKV (from makemkv.com, not Homebrew), Music Presence, VLC |
@@ -96,17 +103,17 @@ Everything is installed with Homebrew (`--tags homebrew`), grouped into categori
 | `maker` | | ElegooSlicer, Raspberry Pi Imager |
 | `personal` | | Bitwarden, Claude, Discord, Ungoogled Chromium |
 
-Rust: the stable toolchain is installed via Homebrew's rustup and set as default, and rustup is added to the fish `PATH`.
-
 Shell: fish is set as the login shell, and its config and functions are installed from `files/fish`. The prompt is [starship](https://starship.rs).
 
 Git: identity and settings (`main` default branch, `push.autoSetupRemote`, `pull.rebase`, `fetch.prune`, `rerere`, histogram diffs) are set in `~/.gitconfig`, and a global ignore file is installed from `files/git/ignore`.
 
 SSH: `~/.ssh/config` is installed from `files/ssh/config` and points every host at Bitwarden's SSH agent, so keys live in your Bitwarden vault instead of on disk.
 
-Rust and Python: rustup also installs `rust-analyzer` and `rust-src`; uv installs Python 3.15 into `~/.local/bin`.
+Rust and Python: Homebrew's rustup installs the stable Rust toolchain with `rust-analyzer` and `rust-src`, and sets stable as the default on every run (change `rust_default_toolchain` to keep another default). uv installs Python 3.15 into `~/.local/bin`, which comes first in the fish `PATH`, so `python3.15` is uv's copy rather than Homebrew's. Homebrew's own tools come before Apple's (`/usr/bin`), so `git` is Homebrew's.
 
-Zed: settings are installed from `files/zed/settings.json` (format on save, fish terminal, ruff + basedpyright for Python, clippy for Rust, C#/TOML/Docker/fish extensions). Edit that file rather than Zed's settings UI, since the playbook overwrites UI changes (keeping a backup).
+Zed: settings are installed from `files/zed/settings.json`: format on save (ESLint fixes then Prettier for TypeScript/JavaScript; ruff for Python), basedpyright and ruff for Python, clippy for Rust, a fish terminal, and the C#, Docker, Docker Compose, fish, HTML, SQL, TOML and XML extensions.
+
+> These files are managed by the playbook: `~/.config/fish/config.fish` and `functions/`, Zed's `settings.json`, `~/.ssh/config` and `~/.config/git/ignore` (from `files/`), plus the generated `~/.config/fish/conf.d/homebrew-rustup.fish`. When their tag runs (`fish`, `zed`, `ssh`, `git`, `rust`) and the content differs, they're replaced, with a timestamped backup kept next to each copied file. Make changes in `files/` in this repo, not in the apps, or turn the matching `configure_*` setting off.
 
 macOS settings:
 
