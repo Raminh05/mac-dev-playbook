@@ -87,6 +87,29 @@
         - DSDontWriteNetworkStores
         - DSDontWriteUSBStores
 
+- name: Turn off Siri and Apple Intelligence.
+  when: configure_disable_ai
+  block:
+    - name: Turn off Siri and hide it from the menu bar.
+      community.general.osx_defaults:
+        domain: "{{ item.domain }}"
+        key: "{{ item.key }}"
+        type: bool
+        value: false
+      loop:
+        - {domain: com.apple.assistant.support, key: Assistant Enabled}
+        - {domain: com.apple.Siri, key: StatusMenuVisible}
+        - {domain: com.apple.Siri, key: VoiceTriggerUserEnabled}
+
+    # Not an Apple-documented key; confirm under System Settings > Apple
+    # Intelligence & Siri after logging back in.
+    - name: Opt out of Apple Intelligence.
+      community.general.osx_defaults:
+        domain: com.apple.CloudSubscriptionFeatures.optIn
+        key: "545129924"
+        type: bool
+        value: false
+
 # Only removes apps installed to /Applications. Apps in /System/Applications
 # (Safari, Music, News, ...) are on the sealed system volume and can't be removed.
 - name: Remove preinstalled Apple apps.

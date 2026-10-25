@@ -51,7 +51,7 @@ If you need to supply an SSH password (if you don't use SSH keys), pass `--ask-p
 You can run only part of the playbook with `--tags`. The tags available are:
 
   - `homebrew`: Homebrew itself plus every app and package category below
-  - `macos`: Dock, appearance, developer-friendly settings and removing Apple's preinstalled apps
+  - `macos`: Dock, appearance, developer-friendly settings, turning off Siri and Apple Intelligence, and removing Apple's preinstalled apps
   - `fish`, `zed`, `rust`, `python`, `git`, `ssh`, `touchid`, `timemachine`, `spotlight`
   - `mas`, `dock` (Dock items via dockutil, off by default), `sudoers`, `extra-packages` and `post`
 
@@ -123,10 +123,11 @@ macOS and system settings (`macos` tag, plus `touchid`, `timemachine` and `spotl
   - Telemetry off for Homebrew (`brew analytics off`) and the .NET CLI (via `config.fish`), as well as Zed
   - Fast key repeat (and no accent popup on hold); smart quotes, smart dashes and autocorrect off
   - Finder shows file extensions, hidden files, the path bar and the status bar; uses list view by default; searches the current folder by default; empties Trash items after 30 days; no `.DS_Store` files on network or USB volumes
+  - Siri turned off (and hidden from the menu bar), and Apple Intelligence opted out
   - Touch ID for `sudo` (via `/etc/pam.d/sudo_local`, which survives macOS updates)
   - Time Machine skips rebuildable files: [asimov](https://github.com/AsimovMac/asimov) excludes project folders (`node_modules`, Rust `target`, `.venv`, .NET `bin`/`obj`) and common caches daily, and Rust/bun/uv toolchain folders are excluded directly
   - Spotlight doesn't index `/Volumes/secrets` (the setting is stored on the drive; only applied while it's mounted)
-  - Removes Apple's GarageBand (and its sound library), iMovie, Keynote, Numbers and Pages if present. Built-in apps in `/System/Applications` (Safari, Music, News, etc.) are protected by macOS and can't be removed.
+  - Removes Apple's GarageBand (and its sound library), iMovie, Keynote, Numbers and Pages if present. On a new Mac the App Store installs these in the background after you first log in, so if they show up after the first run, run `ansible-playbook main.yml --tags macos` again. Built-in apps in `/System/Applications` (Safari, Music, News, etc.) are protected by macOS and can't be removed.
 
 ## Manual steps after setup
 
@@ -135,7 +136,7 @@ Some things can't be automated reliably, so do these by hand after the playbook 
   - **Finder sidebar:** open Finder > Settings > Sidebar and make sure **AirDrop** (under Favorites) and your **Mac's name** (under Locations; this is the "Computer" item) are checked. The sidebar item list lives in binary files whose format changes between macOS versions, so the playbook doesn't touch it.
   - **Bitwarden SSH agent:** sign in to Bitwarden, then turn on Settings > **Enable SSH agent**. Your SSH keys need to be in the vault (as SSH key items).
   - **Push access to this repo:** once the Bitwarden SSH agent is on, switch the clone from HTTPS to SSH: `git -C ~/Developer/mac-dev-playbook remote set-url origin git@github.com:Raminh05/mac-dev-playbook.git`
-  - **Keyboard settings:** log out and back in for the key repeat settings to take effect.
+  - **Log out and back in** for the key repeat, Dark mode and Siri settings to take effect. Then check System Settings > Apple Intelligence & Siri shows both turned off.
   - **Terminal font:** in Terminal > Settings > Profiles > Text, set the font to **JetBrainsMono Nerd Font Mono** so starship's prompt icons don't show as boxes (Zed is already set up).
   - **Open at login:** turn on launch at login for Stats, Bitwarden, Tailscale and OrbStack (in each app's settings, or System Settings > General > Login Items).
   - **Sign in:** Steam, Discord, Tailscale, and JetBrains (Rider and WebStorm; turn on Settings Sync to restore IDE settings).

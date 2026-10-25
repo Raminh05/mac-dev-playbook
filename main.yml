@@ -27,18 +27,22 @@
         - "{{ playbook_dir }}/config.yml"
       tags: ['always']
 
+    # Installed in step 1 of the README (and by the Homebrew installer).
+    - name: Check the Command Line Tools are installed.
+      command: xcode-select -p
+      changed_when: false
+      tags: ['always']
+
   roles:
     # Tagged with every tag that needs Homebrew, so any one of them can run
     # first on a fresh Mac.
-    - role: elliotweiser.osx-command-line-tools
-      tags: &homebrew_tags
+    - role: geerlingguy.mac.homebrew
+      tags:
         - homebrew
         - fish
         - rust
         - python
         - timemachine
-    - role: geerlingguy.mac.homebrew
-      tags: *homebrew_tags
     - role: geerlingguy.mac.mas
       when: (mas_installed_apps | length > 0) or (mas_installed_app_ids | length > 0)
       tags: ['mas']

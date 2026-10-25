@@ -13,13 +13,13 @@
 
 - name: Set fish as the login shell.
   user:
-    name: "{{ ansible_user_id }}"
+    name: "{{ ansible_facts.user_id }}"
     shell: "{{ fish_path }}"
   become: true
 
 - name: Ensure fish config directories exist.
   file:
-    path: "{{ ansible_env.HOME }}/.config/fish/{{ item }}"
+    path: "{{ ansible_facts.env.HOME }}/.config/fish/{{ item }}"
     state: directory
     mode: "0755"
   loop:
@@ -29,7 +29,7 @@
 - name: Install fish config and functions.
   copy:
     src: "files/fish/{{ item }}"
-    dest: "{{ ansible_env.HOME }}/.config/fish/{{ item }}"
+    dest: "{{ ansible_facts.env.HOME }}/.config/fish/{{ item }}"
     mode: "0644"
     backup: true
   loop:

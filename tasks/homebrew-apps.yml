@@ -28,7 +28,7 @@
   become: true
   when:
     - install_rosetta
-    - ansible_architecture == 'arm64'
+    - ansible_facts.architecture == 'arm64'
 
 - name: Install Homebrew packages.
   community.general.homebrew:

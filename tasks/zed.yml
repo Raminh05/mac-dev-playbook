@@ -1,13 +1,13 @@
 ---
 - name: Ensure Zed config directory exists.
   file:
-    path: "{{ ansible_env.HOME }}/.config/zed"
+    path: "{{ ansible_facts.env.HOME }}/.config/zed"
     state: directory
     mode: "0755"
 
 - name: Install Zed settings.
   copy:
     src: files/zed/settings.json
-    dest: "{{ ansible_env.HOME }}/.config/zed/settings.json"
+    dest: "{{ ansible_facts.env.HOME }}/.config/zed/settings.json"
     mode: "0644"
     backup: true

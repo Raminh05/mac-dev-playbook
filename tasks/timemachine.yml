@@ -31,7 +31,7 @@
   args:
     executable: /bin/bash
   vars:
-    tm_path: "{{ item | regex_replace('^~', ansible_env.HOME) }}"
+    tm_path: "{{ item | regex_replace('^~', ansible_facts.env.HOME) }}"
   loop: "{{ timemachine_exclusions }}"
   register: tm_exclusions
   changed_when: "'unchanged' not in tm_exclusions.stdout"

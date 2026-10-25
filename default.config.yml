@@ -27,7 +27,12 @@ dock_magnification_size: 72
 configure_appearance: true
 dark_mode: true
 
+# Turn off Siri and opt out of Apple Intelligence (applies after logging out and in).
+configure_disable_ai: true
+
 # Remove preinstalled Apple apps from /Applications (app names without .app).
+# On a new Mac the App Store installs these in the background after the first
+# login, so they may not exist yet on the first run; run `--tags macos` again.
 configure_debloat: true
 apple_apps_remove:
   - GarageBand
