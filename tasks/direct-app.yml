@@ -49,10 +49,13 @@
 # when the flag is actually there.
 - name: "Clear quarantine flag: {{ direct_app.name }}"
   shell: >
+    set -o pipefail;
     app="/Applications/{{ direct_app.name }}.app";
-    if xattr -rl "$app" | grep -q com.apple.quarantine; then
+    if xattr -rl "$app" | grep com.apple.quarantine >/dev/null; then
     chmod -R u+w "$app" && xattr -dr com.apple.quarantine "$app" && echo cleared;
     fi
+  args:
+    executable: /bin/bash
   register: direct_app_quarantine
   changed_when: "'cleared' in direct_app_quarantine.stdout"
   when:
