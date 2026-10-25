@@ -1,19 +1,17 @@
 ---
-# Set to 'true' to configure the Dock via dockutil.
-configure_dock: false
-dockitems_remove: []
-# - Launchpad
-# - TV
-# - Podcasts
-# - 'App Store'
-dockitems_persist: []
-# - name: "Zed"
-#   path: "/Applications/Zed.app/"
-#   pos: 5
+# Replace the Dock's apps with these, in order. Finder always stays first.
+configure_dock: true
+dock_apps:
+  - /System/Applications/System Settings.app
+  - /System/Applications/Utilities/Terminal.app
+  - /Applications/Discord.app
+  - /Applications/Zed.app
 
 # Dock auto-hide behavior (independent of configure_dock).
 configure_dock_settings: true
 dock_autohide: true
+# Don't add a section of recently used apps to the Dock.
+dock_show_recents: false
 # Seconds before the Dock starts to appear on hover (macOS default: 0.5).
 dock_autohide_delay: 0
 # Duration of the show/hide animation in seconds (macOS default: ~0.5).

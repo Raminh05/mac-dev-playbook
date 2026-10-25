@@ -51,11 +51,12 @@ If you need to supply an SSH password (if you don't use SSH keys), pass `--ask-p
 You can run only part of the playbook with `--tags`. The tags available are:
 
   - `homebrew`: Homebrew itself plus every app and package category below
-  - `macos`: Dock, appearance, developer-friendly settings, turning off Siri and Apple Intelligence, and removing Apple's preinstalled apps
+  - `macos`: Dock behavior, appearance, developer-friendly settings, turning off Siri and Apple Intelligence, and removing Apple's preinstalled apps
+  - `dock`: replaces the Dock's apps with `dock_apps`
   - `fish`, `zed`, `rust`, `python`, `git`, `ssh`, `touchid`, `timemachine`, `spotlight`
-  - `mas`, `dock` (Dock items via dockutil, off by default), `sudoers`, `extra-packages` and `post`
+  - `mas`, `sudoers`, `extra-packages` and `post`
 
-Each tag can run on its own, even as the first run on a fresh Mac: any tag that needs Homebrew installs it first, and `fish`, `rust`, `python` and `timemachine` install the tool they need themselves. For example:
+Each tag can run on its own, even as the first run on a fresh Mac: any tag that needs Homebrew installs it first, and `dock`, `fish`, `rust`, `python` and `timemachine` install the tool they need themselves. For example:
 
     ansible-playbook main.yml --tags "macos,fish"
 
@@ -118,7 +119,8 @@ Zed: settings are installed from `files/zed/settings.json`: format on save (ESLi
 macOS and system settings (`macos` tag, plus `touchid`, `timemachine` and `spotlight`):
 
   - Dock auto-hides with no delay and a fast animation
-  - Dock icons magnify slightly on hover
+  - Dock icons magnify slightly on hover, and no recent apps section
+  - Dock holds only Finder, System Settings, Terminal, Discord and Zed (`dock` tag, set by `dock_apps`)
   - Dark mode, with automatic Light/Dark switching disabled
   - Telemetry off for Homebrew (`brew analytics off`) and the .NET CLI (via `config.fish`), as well as Zed
   - Fast key repeat (and no accent popup on hold); smart quotes, smart dashes and autocorrect off

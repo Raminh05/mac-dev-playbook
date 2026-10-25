@@ -4,7 +4,7 @@
 - name: Configure the Dock.
   when: configure_dock_settings
   block:
-    - name: Configure Dock auto-hide and magnification behavior.
+    - name: Configure Dock auto-hide, magnification and recent apps.
       community.general.osx_defaults:
         domain: com.apple.dock
         key: "{{ item.key }}"
@@ -16,6 +16,7 @@
         - {key: autohide-time-modifier, type: float, value: "{{ dock_autohide_time_modifier }}"}
         - {key: magnification, type: bool, value: "{{ dock_magnification }}"}
         - {key: largesize, type: int, value: "{{ dock_magnification_size }}"}
+        - {key: show-recents, type: bool, value: "{{ dock_show_recents }}"}
       notify: Restart Dock
 
 - name: Configure appearance.

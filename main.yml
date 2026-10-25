@@ -39,6 +39,7 @@
     - role: geerlingguy.mac.homebrew
       tags:
         - homebrew
+        - dock
         - fish
         - rust
         - python
@@ -46,9 +47,6 @@
     - role: geerlingguy.mac.mas
       when: (mas_installed_apps | length > 0) or (mas_installed_app_ids | length > 0)
       tags: ['mas']
-    - role: geerlingguy.mac.dock
-      when: configure_dock
-      tags: ['dock']
 
   tasks:
     - import_tasks: tasks/homebrew-apps.yml
@@ -60,6 +58,10 @@
 
     - import_tasks: tasks/macos.yml
       tags: ['macos']
+
+    - import_tasks: tasks/dock.yml
+      when: configure_dock
+      tags: ['dock']
 
     - import_tasks: tasks/fish.yml
       when: configure_fish

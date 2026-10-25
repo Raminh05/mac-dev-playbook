@@ -1,0 +1,36 @@
+---
+# Makes the Dock exactly dock_apps, in order, after Finder (which macOS always
+# keeps first). Everything else, including the Downloads stack, is removed.
+# Apps that aren't installed are left out until they are.
+- name: Install dockutil.
+  community.general.homebrew:
+    name: dockutil
+    state: present
+
+- name: Check which Dock apps are installed.
+  stat:
+    path: "{{ item }}"
+  loop: "{{ dock_apps }}"
+  register: dock_app_stats
+
+- name: Read the current Dock items.
+  command: dockutil --list
+  register: dock_list
+  changed_when: false
+
+# dockutil --list prints label, URL, section, ... separated by tabs.
+- name: Replace the Dock items.
+  shell: |
+    set -e
+    dockutil --remove all --no-restart
+    {% for app in dock_installed_apps %}
+    dockutil --add {{ app | quote }} --no-restart
+    {% endfor %}
+  args:
+    executable: /bin/bash
+  vars:
+    dock_installed_apps: "{{ dock_app_stats.results | selectattr('stat.exists') | map(attribute='item') | list }}"
+    dock_wanted: "{{ dock_installed_apps | map('urlencode') | map('regex_replace', '^', 'file://') | map('regex_replace', '$', '/') | list }}"
+    dock_current: "{{ dock_list.stdout_lines | map('split', '\t') | rejectattr('2', 'equalto', 'recentApps') | map(attribute='1') | list }}"
+  when: dock_current != dock_wanted
+  notify: Restart Dock
