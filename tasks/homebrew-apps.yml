@@ -1,0 +1,42 @@
+---
+# Installs every category in homebrew_categories (see default.config.yml) in
+# one pass, plus the apps that have to come from their developers directly.
+- name: Collect packages and apps from all categories.
+  set_fact:
+    homebrew_category_packages: "{{ homebrew_categories | map(attribute='packages', default=[]) | flatten }}"
+    homebrew_category_casks: "{{ homebrew_categories | map(attribute='casks', default=[]) | flatten }}"
+
+# Needed by Intel-only apps such as Steam on Apple silicon.
+- name: Install Rosetta 2.
+  command: softwareupdate --install-rosetta --agree-to-license
+  args:
+    creates: /Library/Apple/usr/libexec/oah/libRosettaRuntime
+  become: true
+  when:
+    - install_rosetta
+    - ansible_architecture == 'arm64'
+
+- name: Install Homebrew packages.
+  community.general.homebrew:
+    name: "{{ homebrew_category_packages }}"
+    state: present
+  when: homebrew_category_packages | length > 0
+
+- name: Install Homebrew apps.
+  community.general.homebrew_cask:
+    name: "{{ homebrew_category_casks }}"
+    state: present
+    install_options: "appdir={{ homebrew_cask_appdir }}"
+    # Some apps (Office, .NET SDK, Tailscale, ...) run installers that need sudo.
+    sudo_password: "{{ ansible_become_password | default(omit) }}"
+  when: homebrew_category_casks | length > 0
+
+- name: Install apps not available on Homebrew.
+  include_tasks:
+    file: direct-app.yml
+    apply:
+      tags: ['homebrew']
+  loop: "{{ direct_apps }}"
+  loop_control:
+    loop_var: direct_app
+    label: "{{ direct_app.name | default('(skipped)') }}"

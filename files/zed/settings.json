@@ -1,0 +1,112 @@
+// Managed by mac-dev-playbook (files/zed/settings.json). Changes made in Zed's
+// UI are overwritten on the next playbook run; edit this file instead.
+{
+  // General
+  "base_keymap": "VSCode",
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "theme": {
+    "mode": "system",
+    "light": "Gruvbox Light",
+    "dark": "Gruvbox Dark"
+  },
+  "session": {
+    "trust_all_worktrees": true
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+
+  // AI
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    }
+  },
+
+  // Editing
+  "format_on_save": "on",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+  "inlay_hints": {
+    "enabled": true
+  },
+  "wrap_guides": [100],
+
+  // Terminal
+  "terminal": {
+    "shell": {
+      "program": "/opt/homebrew/bin/fish"
+    }
+  },
+
+  // Keep build output and dependencies out of search and the file finder.
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.DS_Store",
+    "**/node_modules",
+    "**/target",
+    "**/bin/Debug",
+    "**/bin/Release",
+    "**/obj",
+    "**/.venv",
+    "**/__pycache__",
+    "**/.ruff_cache",
+    "**/dist"
+  ],
+
+  // .NET project files are XML.
+  "file_types": {
+    "XML": ["csproj", "fsproj", "props", "targets", "slnx"]
+  },
+
+  // Languages without built-in support in Zed.
+  "auto_install_extensions": {
+    "csharp": true,
+    "dockerfile": true,
+    "docker-compose": true,
+    "fish": true,
+    "html": true,
+    "sql": true,
+    "toml": true,
+    "xml": true
+  },
+
+  "languages": {
+    "Python": {
+      // basedpyright for types, ruff for linting, import sorting and formatting.
+      "language_servers": ["basedpyright", "ruff", "!pyright", "!pylsp"],
+      "formatter": [
+        { "code_action": "source.organizeImports.ruff" },
+        { "code_action": "source.fixAll.ruff" },
+        { "language_server": { "name": "ruff" } }
+      ]
+    },
+    // TypeScript/JavaScript use Zed's built-in vtsls, ESLint and Prettier.
+    // Apply ESLint fixes (when the project has an ESLint config), then Prettier.
+    "TypeScript": {
+      "formatter": [{ "code_action": "source.fixAll.eslint" }, "prettier"]
+    },
+    "TSX": {
+      "formatter": [{ "code_action": "source.fixAll.eslint" }, "prettier"]
+    },
+    "JavaScript": {
+      "formatter": [{ "code_action": "source.fixAll.eslint" }, "prettier"]
+    },
+    "C#": {
+      "tab_size": 4
+    }
+  },
+
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        // Run clippy instead of `cargo check` for on-save diagnostics.
+        "check": {
+          "command": "clippy"
+        }
+      }
+    }
+  }
+}

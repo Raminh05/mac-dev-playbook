@@ -1,0 +1,30 @@
+---
+# git and gh are installed by Homebrew (see homebrew_dev).
+- name: Configure git identity.
+  community.general.git_config:
+    scope: global
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+  loop:
+    - {name: user.name, value: "{{ git_user_name }}"}
+    - {name: user.email, value: "{{ git_user_email }}"}
+
+- name: Configure global git settings.
+  community.general.git_config:
+    scope: global
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop: "{{ git_global_config | dict2items }}"
+
+# Git reads ~/.config/git/ignore as the global ignore file by default.
+- name: Ensure git config directory exists.
+  file:
+    path: "{{ ansible_env.HOME }}/.config/git"
+    state: directory
+    mode: "0755"
+
+- name: Install global gitignore.
+  copy:
+    src: files/git/ignore
+    dest: "{{ ansible_env.HOME }}/.config/git/ignore"
+    mode: "0644"

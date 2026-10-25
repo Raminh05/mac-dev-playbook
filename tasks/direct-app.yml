@@ -1,0 +1,50 @@
+---
+# Installs an app straight from its developer's download, for apps whose
+# Homebrew cask is disabled. Expects `direct_app`:
+#   {name, url, sha256, archive: zip|dmg}
+# The .app inside the download must be named "<name>.app". To upgrade, update
+# url and sha256, and delete the app from /Applications.
+- name: "Download app: {{ direct_app.name }}"
+  get_url:
+    url: "{{ direct_app.url }}"
+    dest: "/tmp/{{ direct_app.name }}.{{ direct_app.archive }}"
+    checksum: "sha256:{{ direct_app.sha256 }}"
+    mode: "0644"
+  when: direct_app.url is defined
+
+- name: "Check whether app is installed: {{ direct_app.name }}"
+  stat:
+    path: "/Applications/{{ direct_app.name }}.app"
+  register: direct_app_stat
+  when: direct_app.url is defined
+
+- name: "Install app from zip: {{ direct_app.name }}"
+  unarchive:
+    src: "/tmp/{{ direct_app.name }}.zip"
+    dest: /Applications
+    remote_src: true
+  when:
+    - direct_app.url is defined
+    - direct_app.archive == 'zip'
+    - not direct_app_stat.stat.exists
+
+- name: "Install app from dmg: {{ direct_app.name }}"
+  shell: >
+    set -o pipefail &&
+    mnt=$(mktemp -d) &&
+    hdiutil attach -nobrowse -readonly -mountpoint "$mnt" "/tmp/{{ direct_app.name }}.dmg" >/dev/null &&
+    ditto "$mnt/{{ direct_app.name }}.app" "/Applications/{{ direct_app.name }}.app";
+    status=$?; hdiutil detach "$mnt" >/dev/null; exit $status
+  args:
+    executable: /bin/bash
+  when:
+    - direct_app.url is defined
+    - direct_app.archive == 'dmg'
+    - not direct_app_stat.stat.exists
+
+# These apps are only ad-hoc signed, so Gatekeeper blocks them if quarantined.
+- name: "Clear quarantine flag: {{ direct_app.name }}"
+  command: xattr -dr com.apple.quarantine "/Applications/{{ direct_app.name }}.app"
+  when:
+    - direct_app.url is defined
+    - not direct_app_stat.stat.exists

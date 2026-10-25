@@ -1,0 +1,8 @@
+# Managed by mac-dev-playbook (files/git/ignore). Global gitignore.
+
+# macOS
+.DS_Store
+._*
+
+# Claude Code local settings
+**/.claude/settings.local.json

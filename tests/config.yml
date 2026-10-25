@@ -1,15 +1,24 @@
 ---
-homebrew_installed_packages:
-  - autoconf
-  - bash-completion
-  - gettext
-  - sqlite
-  - ssh-copy-id
-  - readline
-  - pv
-  - wget
-  - wrk
+# Keep CI installs small: one formula and one cask, other categories empty.
+homebrew_dev:
+  packages:
+    - python@3.15
+  casks:
+    - zed
+homebrew_shell: {}
+homebrew_networking: {}
+homebrew_media: {}
+homebrew_photography: {}
+homebrew_office: {}
+homebrew_gaming: {}
+install_rosetta: false
+direct_app_melonds: {}
+direct_app_makemkv: {}
+homebrew_maker: {}
+homebrew_personal: {}
 
-homebrew_cask_apps:
-  - firefox
-  - licecap
+# Skip slow or host-specific setup in CI.
+configure_rust: false
+configure_python: false
+configure_timemachine: false
+configure_touchid_sudo: false

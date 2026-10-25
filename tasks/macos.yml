@@ -1,0 +1,110 @@
+---
+# macOS settings. Each block has its own configure_* toggle in default.config.yml.
+
+- name: Configure the Dock.
+  when: configure_dock_settings
+  block:
+    - name: Configure Dock auto-hide and magnification behavior.
+      community.general.osx_defaults:
+        domain: com.apple.dock
+        key: "{{ item.key }}"
+        type: "{{ item.type }}"
+        value: "{{ item.value }}"
+      loop:
+        - {key: autohide, type: bool, value: "{{ dock_autohide }}"}
+        - {key: autohide-delay, type: float, value: "{{ dock_autohide_delay }}"}
+        - {key: autohide-time-modifier, type: float, value: "{{ dock_autohide_time_modifier }}"}
+        - {key: magnification, type: bool, value: "{{ dock_magnification }}"}
+        - {key: largesize, type: int, value: "{{ dock_magnification_size }}"}
+      notify: Restart Dock
+
+- name: Configure appearance.
+  when: configure_appearance
+  block:
+    - name: Configure Dark mode.
+      community.general.osx_defaults:
+        domain: NSGlobalDomain
+        key: AppleInterfaceStyle
+        type: string
+        value: Dark
+        state: "{{ 'present' if dark_mode else 'absent' }}"
+
+    - name: Disable automatic Light/Dark appearance switching.
+      community.general.osx_defaults:
+        domain: NSGlobalDomain
+        key: AppleInterfaceStyleSwitchesAutomatically
+        type: bool
+        value: false
+
+- name: Configure macOS for development.
+  when: configure_macos_dev
+  block:
+    # Keyboard changes apply after logging out and back in.
+    - name: Configure keyboard and text input for coding.
+      community.general.osx_defaults:
+        domain: NSGlobalDomain
+        key: "{{ item.key }}"
+        type: "{{ item.type }}"
+        value: "{{ item.value }}"
+      loop:
+        # Fast key repeat, and repeat instead of the accent popup when holding a key.
+        - {key: KeyRepeat, type: int, value: 2}
+        - {key: InitialKeyRepeat, type: int, value: 15}
+        - {key: ApplePressAndHoldEnabled, type: bool, value: false}
+        # Stop mangling pasted code.
+        - {key: NSAutomaticQuoteSubstitutionEnabled, type: bool, value: false}
+        - {key: NSAutomaticDashSubstitutionEnabled, type: bool, value: false}
+        - {key: NSAutomaticSpellingCorrectionEnabled, type: bool, value: false}
+        # Always show file extensions.
+        - {key: AppleShowAllExtensions, type: bool, value: true}
+
+    - name: Configure Finder.
+      community.general.osx_defaults:
+        domain: com.apple.finder
+        key: "{{ item.key }}"
+        type: "{{ item.type }}"
+        value: "{{ item.value }}"
+      loop:
+        - {key: AppleShowAllFiles, type: bool, value: true}
+        - {key: ShowPathbar, type: bool, value: true}
+        # Item count and free space at the bottom of windows.
+        - {key: ShowStatusBar, type: bool, value: true}
+        # List view for folders that don't already have a saved view.
+        - {key: FXPreferredViewStyle, type: string, value: Nlsv}
+        # Remove items from the Trash after 30 days.
+        - {key: FXRemoveOldTrashItems, type: bool, value: true}
+        # Search the current folder instead of the whole Mac.
+        - {key: FXDefaultSearchScope, type: string, value: SCcf}
+      notify: Restart Finder
+
+    - name: Don't write .DS_Store files to network and USB volumes.
+      community.general.osx_defaults:
+        domain: com.apple.desktopservices
+        key: "{{ item }}"
+        type: bool
+        value: true
+      loop:
+        - DSDontWriteNetworkStores
+        - DSDontWriteUSBStores
+
+# Only removes apps installed to /Applications. Apps in /System/Applications
+# (Safari, Music, News, ...) are on the sealed system volume and can't be removed.
+- name: Remove preinstalled Apple apps.
+  when: configure_debloat
+  become: true
+  block:
+    - name: Remove unwanted Apple apps.
+      file:
+        path: "/Applications/{{ item }}.app"
+        state: absent
+      loop: "{{ apple_apps_remove }}"
+
+    - name: Remove GarageBand sound library.
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /Library/Application Support/GarageBand
+        - /Library/Application Support/Logic
+        - /Library/Audio/Apple Loops
+      when: "'GarageBand' in apple_apps_remove"

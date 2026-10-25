@@ -1,0 +1,28 @@
+---
+# The setting is stored on the volume itself, so it follows the drive to other
+# Macs. Volumes that aren't mounted are skipped; run `--tags spotlight` with the
+# drive plugged in.
+- name: Check Spotlight volumes are mounted.
+  stat:
+    path: "{{ item }}"
+  loop: "{{ spotlight_disabled_volumes }}"
+  register: spotlight_volumes
+
+- name: Check Spotlight indexing status.
+  command: "mdutil -s {{ item.item }}"
+  loop: "{{ spotlight_volumes.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  register: spotlight_status
+  changed_when: false
+  when: item.stat.exists
+
+- name: Disable Spotlight indexing.
+  command: "mdutil -i off {{ item.item.item }}"
+  loop: "{{ spotlight_status.results }}"
+  loop_control:
+    label: "{{ item.item.item }}"
+  become: true
+  when:
+    - item is not skipped
+    - "'Indexing enabled' in item.stdout"
