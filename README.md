@@ -93,7 +93,7 @@ Everything is installed with Homebrew (`--tags homebrew`), grouped into `brew_<c
 
 | Category | Packages | Apps |
 |---|---|---|
-| `dev` | bun, cmake, gh, git, hidapi, libpq, opencode, python@3.15, rustup, uv | Bruno, Claude Code, .NET SDK 10 (includes ASP.NET Core), OrbStack, Rider, Termius, WebStorm, XQuartz, Zed |
+| `dev` | bun, cmake, gh, git, hidapi, libpq, opencode, python@3.15, rustup, uv | Bruno, Claude Code, .NET SDK 10 (includes ASP.NET Core), OrbStack, Rider, WebStorm, XQuartz, Zed |
 | `shell` | bat, btop, fastfetch, fish, starship | JetBrains Mono Nerd Font, Stats |
 | `networking` | iperf3, nmap | Tailscale |
 | `media` | ffmpeg, yt-dlp | HandBrake, MakeMKV (from makemkv.com, not Homebrew), Music Presence, VLC |
@@ -138,7 +138,7 @@ Some things can't be automated reliably, so do these by hand after the playbook 
   - **Keyboard settings:** log out and back in for the key repeat settings to take effect.
   - **Terminal font:** in Terminal > Settings > Profiles > Text, set the font to **JetBrainsMono Nerd Font Mono** so starship's prompt icons don't show as boxes (Zed is already set up).
   - **Open at login:** turn on launch at login for Stats, Bitwarden, Tailscale and OrbStack (in each app's settings, or System Settings > General > Login Items).
-  - **Sign in:** Steam, Termius, Discord, Tailscale, and JetBrains (Rider and WebStorm; turn on Settings Sync to restore IDE settings).
+  - **Sign in:** Steam, Discord, Tailscale, and JetBrains (Rider and WebStorm; turn on Settings Sync to restore IDE settings).
   - **Time Machine:** System Settings > General > Time Machine > Add Backup Disk.
   - **Spotlight on the dev drive:** if `/Volumes/secrets` wasn't plugged in during setup, plug it in and run `ansible-playbook main.yml --tags spotlight` once.
   - **Lightroom Classic:** sign in to Adobe Creative Cloud and install it from there.

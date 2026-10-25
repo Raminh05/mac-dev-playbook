@@ -137,7 +137,6 @@ brew_dev:
     - dotnet-sdk
     - orbstack
     - rider
-    - termius
     - webstorm
     - xquartz
     - zed
