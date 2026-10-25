@@ -111,11 +111,11 @@ SSH: `~/.ssh/config` is installed from `files/ssh/config` and points every host 
 
 Rust and Python: Homebrew's rustup installs the stable Rust toolchain with `rust-analyzer` and `rust-src`, and sets stable as the default on every run (change `rust_default_toolchain` to keep another default). uv installs Python 3.15 into `~/.local/bin`, which comes first in the fish `PATH`, so `python3.15` is uv's copy rather than Homebrew's. Homebrew's own tools come before Apple's (`/usr/bin`), so `git` is Homebrew's.
 
-Zed: settings are installed from `files/zed/settings.json`: format on save (ESLint fixes then Prettier for TypeScript/JavaScript; ruff for Python), basedpyright and ruff for Python, clippy for Rust, a fish terminal, and the C#, Docker, Docker Compose, fish, HTML, SQL, TOML and XML extensions.
+Zed: settings are installed from `files/zed/settings.json`: format on save (ESLint fixes then Prettier for TypeScript/JavaScript; ruff for Python), basedpyright and ruff for Python, clippy for Rust, JetBrains Mono Nerd Font in the editor and a fish terminal, and the C#, Docker, Docker Compose, fish, HTML, SQL, TOML and XML extensions.
 
 > These files are managed by the playbook: `~/.config/fish/config.fish` and `functions/`, Zed's `settings.json`, `~/.ssh/config` and `~/.config/git/ignore` (from `files/`), plus the generated `~/.config/fish/conf.d/homebrew-rustup.fish`. When their tag runs (`fish`, `zed`, `ssh`, `git`, `rust`) and the content differs, they're replaced, with a timestamped backup kept next to each copied file. Make changes in `files/` in this repo, not in the apps, or turn the matching `configure_*` setting off.
 
-macOS settings:
+macOS and system settings (`macos` tag, plus `touchid`, `timemachine` and `spotlight`):
 
   - Dock auto-hides with no delay and a fast animation
   - Dock icons magnify slightly on hover
