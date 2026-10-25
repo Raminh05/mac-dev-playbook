@@ -8,6 +8,18 @@
   vars:
     homebrew_category_values: "{{ query('ansible.builtin.vars', *query('ansible.builtin.varnames', '^brew_[a-z0-9_]+$')) }}"
 
+- name: Check Homebrew analytics state.
+  command: /opt/homebrew/bin/brew analytics state
+  register: homebrew_analytics
+  changed_when: false
+  when: homebrew_disable_analytics
+
+- name: Turn off Homebrew analytics.
+  command: /opt/homebrew/bin/brew analytics off
+  when:
+    - homebrew_disable_analytics
+    - "'enabled' in homebrew_analytics.stdout"
+
 # Needed by Intel-only apps such as Steam on Apple silicon.
 - name: Install Rosetta 2.
   command: softwareupdate --install-rosetta --agree-to-license

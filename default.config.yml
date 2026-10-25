@@ -110,6 +110,9 @@ homebrew_taps: []
 homebrew_cask_appdir: /Applications
 homebrew_cask_apps: []
 
+# Turn off Homebrew's anonymous analytics (`brew analytics off`).
+homebrew_disable_analytics: true
+
 # Categorized Homebrew installs, all installed together (`--tags homebrew`).
 # Every variable named brew_<category> is picked up automatically, so a new
 # category only needs defining (here or in config.yml). `packages` are formulae,
@@ -147,6 +150,8 @@ brew_shell:
     - fish
     - starship
   casks:
+    # Coding font with the icons starship's prompt uses (also set in Zed).
+    - font-jetbrains-mono-nerd-font
     # System monitor in the menu bar.
     - stats
 
