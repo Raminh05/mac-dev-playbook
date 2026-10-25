@@ -25,6 +25,9 @@ dock_magnification_size: 72
 configure_appearance: true
 dark_mode: true
 
+# Always show the volume control in the menu bar.
+configure_menubar: true
+
 # Turn off Siri and opt out of Apple Intelligence (applies after logging out and in).
 configure_disable_ai: true
 

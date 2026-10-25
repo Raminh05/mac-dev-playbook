@@ -37,6 +37,27 @@
         type: bool
         value: false
 
+- name: Configure the menu bar.
+  when: configure_menubar
+  block:
+    # 18 is "Always Show in Menu Bar" in System Settings > Menu Bar.
+    - name: Always show the volume control in the menu bar.
+      community.general.osx_defaults:
+        domain: com.apple.controlcenter
+        host: currentHost
+        key: Sound
+        type: int
+        value: 18
+      notify: Restart Control Center
+
+    - name: Mark the volume control as visible.
+      community.general.osx_defaults:
+        domain: com.apple.controlcenter
+        key: NSStatusItem VisibleCC Sound
+        type: bool
+        value: true
+      notify: Restart Control Center
+
 - name: Configure macOS for development.
   when: configure_macos_dev
   block:

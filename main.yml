@@ -20,6 +20,9 @@
     - name: Restart Finder
       command: killall Finder
 
+    - name: Restart Control Center
+      command: killall ControlCenter
+
   pre_tasks:
     - name: Include playbook configuration.
       include_vars: "{{ item }}"

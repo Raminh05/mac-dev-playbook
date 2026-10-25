@@ -51,7 +51,7 @@ If you need to supply an SSH password (if you don't use SSH keys), pass `--ask-p
 You can run only part of the playbook with `--tags`. The tags available are:
 
   - `homebrew`: Homebrew itself plus every app and package category below
-  - `macos`: Dock behavior, appearance, developer-friendly settings, turning off Siri and Apple Intelligence, and removing Apple's preinstalled apps
+  - `macos`: Dock behavior, appearance, menu bar, developer-friendly settings, turning off Siri and Apple Intelligence, and removing Apple's preinstalled apps
   - `dock`: replaces the Dock's apps with `dock_apps`
   - `fish`, `zed`, `rust`, `python`, `git`, `ssh`, `touchid`, `timemachine`, `spotlight`
   - `mas`, `sudoers`, `extra-packages` and `post`
@@ -121,6 +121,7 @@ macOS and system settings (`macos` tag, plus `touchid`, `timemachine` and `spotl
   - Dock auto-hides with no delay and a fast animation
   - Dock icons magnify slightly on hover, and no recent apps section
   - Dock holds only Finder, System Settings, Terminal, Discord and Zed (`dock` tag, set by `dock_apps`)
+  - Volume control always shown in the menu bar
   - Dark mode, with automatic Light/Dark switching disabled
   - Telemetry off for Homebrew (`brew analytics off`) and the .NET CLI (via `config.fish`), as well as Zed
   - Fast key repeat (and no accent popup on hold); smart quotes, smart dashes and autocorrect off
