@@ -3,6 +3,10 @@
 set -g fish_greeting
 set -gx CARGO_INCREMENTAL 0
 
+# Telemetry off (Homebrew's is also turned off persistently by the playbook).
+set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
+set -gx HOMEBREW_NO_ANALYTICS 1
+
 # Cyclone data on the portable dev drive.
 set -gx CYCLONE_CATALOG /Volumes/secrets/NTP/cyclone-data/cyclone.sqlite
 set -gx CYCLONE_ZARR_ROOT /Volumes/secrets/NTP/cyclone-data/zarr

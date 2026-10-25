@@ -94,7 +94,7 @@ Everything is installed with Homebrew (`--tags homebrew`), grouped into `brew_<c
 | Category | Packages | Apps |
 |---|---|---|
 | `dev` | bun, cmake, gh, git, hidapi, libpq, opencode, python@3.15, rustup, uv | Bruno, Claude Code, .NET SDK 10 (includes ASP.NET Core), OrbStack, Rider, Termius, WebStorm, XQuartz, Zed |
-| `shell` | bat, btop, fastfetch, fish, starship | Stats |
+| `shell` | bat, btop, fastfetch, fish, starship | JetBrains Mono Nerd Font, Stats |
 | `networking` | iperf3, nmap | Tailscale |
 | `media` | ffmpeg, yt-dlp | HandBrake, MakeMKV (from makemkv.com, not Homebrew), Music Presence, VLC |
 | `photography` | | Adobe Creative Cloud (install Lightroom Classic from it after signing in) |
@@ -120,6 +120,7 @@ macOS settings:
   - Dock auto-hides with no delay and a fast animation
   - Dock icons magnify slightly on hover
   - Dark mode, with automatic Light/Dark switching disabled
+  - Telemetry off for Homebrew (`brew analytics off`) and the .NET CLI (via `config.fish`), as well as Zed
   - Fast key repeat (and no accent popup on hold); smart quotes, smart dashes and autocorrect off
   - Finder shows file extensions, hidden files, the path bar and the status bar; uses list view by default; searches the current folder by default; empties Trash items after 30 days; no `.DS_Store` files on network or USB volumes
   - Touch ID for `sudo` (via `/etc/pam.d/sudo_local`, which survives macOS updates)
@@ -135,6 +136,10 @@ Some things can't be automated reliably, so do these by hand after the playbook 
   - **Bitwarden SSH agent:** sign in to Bitwarden, then turn on Settings > **Enable SSH agent**. Your SSH keys need to be in the vault (as SSH key items).
   - **Push access to this repo:** once the Bitwarden SSH agent is on, switch the clone from HTTPS to SSH: `git -C ~/Developer/mac-dev-playbook remote set-url origin git@github.com:Raminh05/mac-dev-playbook.git`
   - **Keyboard settings:** log out and back in for the key repeat settings to take effect.
+  - **Terminal font:** in Terminal > Settings > Profiles > Text, set the font to **JetBrainsMono Nerd Font Mono** so starship's prompt icons don't show as boxes (Zed is already set up).
+  - **Open at login:** turn on launch at login for Stats, Bitwarden, Tailscale and OrbStack (in each app's settings, or System Settings > General > Login Items).
+  - **Sign in:** Steam, Termius, Discord, Tailscale, and JetBrains (Rider and WebStorm; turn on Settings Sync to restore IDE settings).
+  - **Time Machine:** System Settings > General > Time Machine > Add Backup Disk.
   - **Spotlight on the dev drive:** if `/Volumes/secrets` wasn't plugged in during setup, plug it in and run `ansible-playbook main.yml --tags spotlight` once.
   - **Lightroom Classic:** sign in to Adobe Creative Cloud and install it from there.
   - **Microsoft Office:** open Word (or any Office app) and sign in with your Microsoft 365 account to activate the suite.

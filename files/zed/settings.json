@@ -4,6 +4,7 @@
   // General
   "base_keymap": "VSCode",
   "ui_font_size": 16,
+  "buffer_font_family": "JetBrainsMono Nerd Font",
   "buffer_font_size": 15,
   "theme": {
     "mode": "system",
@@ -38,7 +39,9 @@
   "terminal": {
     "shell": {
       "program": "/opt/homebrew/bin/fish"
-    }
+    },
+    // Mono variant keeps starship's icons a fixed width.
+    "font_family": "JetBrainsMono Nerd Font Mono"
   },
 
   // Keep build output and dependencies out of search and the file finder.
