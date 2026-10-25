@@ -220,6 +220,13 @@ brew_maker:
     - elegoo-slicer
     - raspberry-pi-imager
 
+# SDR++ isn't on Homebrew, and only its nightly build supports Apple silicon.
+# The nightly is rebuilt in place, so it has no sha256. Set to {} to skip.
+direct_app_sdrpp:
+  name: SDR++
+  url: https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/sdrpp_macos_arm.zip
+  archive: zip
+
 brew_personal:
   casks:
     - bitwarden
@@ -230,11 +237,12 @@ brew_personal:
 # Steam (gaming) is Intel-only, so install Rosetta 2 first on Apple silicon.
 install_rosetta: true
 
-# Apps whose Homebrew casks are disabled, installed from their developers
+# Apps without a working Homebrew cask, installed from their developers
 # (see tasks/direct-app.yml and the direct_app_* entries above).
 direct_apps:
   - "{{ direct_app_makemkv }}"
   - "{{ direct_app_melonds }}"
+  - "{{ direct_app_sdrpp }}"
 
 # See `geerlingguy.mac.mas` role documentation for usage instructions.
 mas_installed_apps: []

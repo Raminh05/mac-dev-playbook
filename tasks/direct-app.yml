@@ -2,13 +2,15 @@
 # Installs an app straight from its developer's download, for apps whose
 # Homebrew cask is disabled. Expects `direct_app`:
 #   {name, url, sha256, archive: zip|dmg}
+# sha256 can be left out for downloads that change in place (nightly builds).
 # The .app inside the download must be named "<name>.app". To upgrade, update
-# url and sha256, and delete the app from /Applications.
+# url and sha256, and delete the app from /Applications (and the download in
+# /tmp, if it has no sha256).
 - name: "Download app: {{ direct_app.name }}"
   get_url:
     url: "{{ direct_app.url }}"
     dest: "/tmp/{{ direct_app.name }}.{{ direct_app.archive }}"
-    checksum: "sha256:{{ direct_app.sha256 }}"
+    checksum: "{{ ('sha256:' ~ direct_app.sha256) if direct_app.sha256 is defined else omit }}"
     mode: "0644"
   when: direct_app.url is defined
 
@@ -43,8 +45,16 @@
     - not direct_app_stat.stat.exists
 
 # These apps are only ad-hoc signed, so Gatekeeper blocks them if quarantined.
+# Some bundle files are read-only (SDR++'s libraries), so only touch the app
+# when the flag is actually there.
 - name: "Clear quarantine flag: {{ direct_app.name }}"
-  command: xattr -dr com.apple.quarantine "/Applications/{{ direct_app.name }}.app"
+  shell: >
+    app="/Applications/{{ direct_app.name }}.app";
+    if xattr -rl "$app" | grep -q com.apple.quarantine; then
+    chmod -R u+w "$app" && xattr -dr com.apple.quarantine "$app" && echo cleared;
+    fi
+  register: direct_app_quarantine
+  changed_when: "'cleared' in direct_app_quarantine.stdout"
   when:
     - direct_app.url is defined
     - not direct_app_stat.stat.exists

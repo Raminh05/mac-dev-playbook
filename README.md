@@ -84,7 +84,7 @@ dock_magnification_size: 80
 dark_mode: false
 ```
 
-Skipping `brew_media` or `brew_gaming` doesn't skip the apps that come from their developers rather than Homebrew, or Rosetta 2; set `direct_app_makemkv: {}`, `direct_app_melonds: {}` or `install_rosetta: false` for those.
+Skipping `brew_media`, `brew_gaming` or `brew_maker` doesn't skip the apps that come from their developers rather than Homebrew, or Rosetta 2; set `direct_app_makemkv: {}`, `direct_app_melonds: {}`, `direct_app_sdrpp: {}` or `install_rosetta: false` for those.
 
 See the [geerlingguy.mac](https://github.com/geerlingguy/ansible-collection-mac) collection's documentation for the Homebrew, Mac App Store and Dock role variables.
 
@@ -101,7 +101,7 @@ Everything is installed with Homebrew (`--tags homebrew`), grouped into `brew_<c
 | `photography` | | Adobe Creative Cloud (install Lightroom Classic from it after signing in) |
 | `office` | | Excel, Outlook, PowerPoint, Teams, Word |
 | `gaming` | | CrossOver, Dolphin, melonDS (from GitHub, not Homebrew), Steam, Virtual Desktop Streamer (Rosetta 2 is installed first on Apple silicon) |
-| `maker` | | ElegooSlicer, Raspberry Pi Imager |
+| `maker` | | ElegooSlicer, Raspberry Pi Imager, SDR++ (nightly build from GitHub, not Homebrew) |
 | `personal` | | Bitwarden, Claude, Discord, Ungoogled Chromium |
 
 Shell: fish is set as the login shell, and its config and functions are installed from `files/fish`. The prompt is [starship](https://starship.rs).

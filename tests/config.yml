@@ -1,7 +1,7 @@
 ---
 # Keep CI installs small, but cover each kind of install: a formula, a plain
 # cask, a pkg-based cask that runs an installer with sudo (tailscale-app), and
-# both direct downloads (melonDS zip, MakeMKV dmg). Other categories are empty.
+# all direct downloads (melonDS and SDR++ zips, MakeMKV dmg). Other categories are empty.
 # Rosetta, Rust, Python and Time Machine run as they do on a real Mac.
 brew_dev:
   packages:
