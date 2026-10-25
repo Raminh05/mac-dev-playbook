@@ -1,9 +1,13 @@
 ---
-# Keep CI installs small: one formula and one cask, other categories empty.
+# Keep CI installs small, but cover each kind of install: a formula, a plain
+# cask, a pkg-based cask that runs an installer with sudo (tailscale-app), and
+# both direct downloads (melonDS zip, MakeMKV dmg). Other categories are empty.
+# Rosetta, Rust, Python and Time Machine run as they do on a real Mac.
 brew_dev:
   packages:
     - python@3.15
   casks:
+    - tailscale-app
     - zed
 brew_shell: {}
 brew_networking: {}
@@ -11,14 +15,8 @@ brew_media: {}
 brew_photography: {}
 brew_office: {}
 brew_gaming: {}
-install_rosetta: false
-direct_app_melonds: {}
-direct_app_makemkv: {}
 brew_maker: {}
 brew_personal: {}
 
-# Skip slow or host-specific setup in CI.
-configure_rust: false
-configure_python: false
-configure_timemachine: false
+# Touch ID for sudo is host-specific; leave the CI runner's PAM config alone.
 configure_touchid_sudo: false
