@@ -23,6 +23,9 @@
     - name: Restart Control Center
       command: killall ControlCenter
 
+    - name: Restart SystemUIServer
+      command: killall SystemUIServer
+
   pre_tasks:
     - name: Include playbook configuration.
       include_vars: "{{ item }}"

@@ -58,6 +58,19 @@
         value: true
       notify: Restart Control Center
 
+- name: Configure screenshots.
+  when: configure_screenshots
+  block:
+    # Removing the key restores the default of saving to the Desktop.
+    - name: Send screenshots to the clipboard.
+      community.general.osx_defaults:
+        domain: com.apple.screencapture
+        key: target
+        type: string
+        value: clipboard
+        state: "{{ 'present' if screenshots_to_clipboard else 'absent' }}"
+      notify: Restart SystemUIServer
+
 - name: Configure macOS for development.
   when: configure_macos_dev
   block:

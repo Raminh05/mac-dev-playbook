@@ -28,6 +28,11 @@ dark_mode: true
 # Always show the volume control in the menu bar.
 configure_menubar: true
 
+# Copy screenshots (⌘⇧3, ⌘⇧4, ⌘⇧5) to the clipboard instead of saving a file.
+# Overrides the Save to choice in the ⌘⇧5 Options menu on each run.
+configure_screenshots: true
+screenshots_to_clipboard: true
+
 # Turn off Siri and opt out of Apple Intelligence (applies after logging out and in).
 configure_disable_ai: true
 
