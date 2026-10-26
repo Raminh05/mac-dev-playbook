@@ -144,6 +144,7 @@ Some things can't be automated reliably, so do these by hand after the playbook 
   - **Open at login:** turn on launch at login for Stats, Bitwarden, Tailscale and OrbStack (in each app's settings, or System Settings > General > Login Items).
   - **Sign in:** Steam, Discord, Tailscale, and JetBrains (Rider and WebStorm; turn on Settings Sync to restore IDE settings).
   - **Time Machine:** System Settings > General > Time Machine > Add Backup Disk.
+  - **Repos:** copies of the work repos (with their gitignored `.env` files) are on the `secrets` drive in `NTP/repos`, and personal ones in `Personal/repos`. Copy them to `~/Documents`, then run `bun install` or `cargo build` in each, since `node_modules` and Rust `target` folders weren't copied. Data the repos use stays on the drive in `NTP/data` (the `CYCLONE_*` variables in `config.fish` point there).
   - **Spotlight on the dev drive:** if `/Volumes/secrets` wasn't plugged in during setup, plug it in and run `ansible-playbook main.yml --tags spotlight` once.
   - **Lightroom Classic:** sign in to Adobe Creative Cloud and install it from there.
   - **Microsoft Office:** open Word (or any Office app) and sign in with your Microsoft 365 account to activate the suite.

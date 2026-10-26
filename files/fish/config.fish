@@ -8,8 +8,8 @@ set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
 set -gx HOMEBREW_NO_ANALYTICS 1
 
 # Cyclone data on the portable dev drive.
-set -gx CYCLONE_CATALOG /Volumes/secrets/NTP/cyclone-data/cyclone.sqlite
-set -gx CYCLONE_ZARR_ROOT /Volumes/secrets/NTP/cyclone-data/zarr
+set -gx CYCLONE_CATALOG /Volumes/secrets/NTP/data/cyclone-data/cyclone.sqlite
+set -gx CYCLONE_ZARR_ROOT /Volumes/secrets/NTP/data/cyclone-data/zarr
 
 # macOS puts /usr/bin ahead of Homebrew, so move Homebrew to the front (so its
 # git etc. win over Apple's), with uv-installed Pythons and tools ahead of that.
