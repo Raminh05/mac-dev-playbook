@@ -1,0 +1,10 @@
+---
+# Links in the home folder to folders on the dev drive. The links are created
+# even while the drive is unplugged; they work again once it's mounted.
+- name: Link home folder shortcuts to the dev drive.
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ ansible_facts.env.HOME }}/{{ item.name }}"
+    state: link
+    force: true
+  loop: "{{ home_links }}"

@@ -53,7 +53,7 @@ You can run only part of the playbook with `--tags`. The tags available are:
   - `homebrew`: Homebrew itself plus every app and package category below
   - `macos`: Dock behavior, appearance, menu bar, developer-friendly settings, turning off Siri and Apple Intelligence, and removing Apple's preinstalled apps
   - `dock`: replaces the Dock's apps with `dock_apps`
-  - `fish`, `zed`, `rust`, `python`, `git`, `ssh`, `touchid`, `timemachine`, `spotlight`
+  - `fish`, `zed`, `rust`, `python`, `git`, `ssh`, `touchid`, `timemachine`, `spotlight`, `links`
   - `mas`, `sudoers`, `extra-packages` and `post`
 
 Each tag can run on its own, even as the first run on a fresh Mac: any tag that needs Homebrew installs it first, and `dock`, `fish`, `rust`, `python` and `timemachine` install the tool they need themselves. For example:
@@ -116,7 +116,7 @@ Zed: settings are installed from `files/zed/settings.json`: format on save (ESLi
 
 > These files are managed by the playbook: `~/.config/fish/config.fish` and `functions/`, Zed's `settings.json`, `~/.ssh/config` and `~/.config/git/ignore` (from `files/`), plus the generated `~/.config/fish/conf.d/homebrew-rustup.fish`. When their tag runs (`fish`, `zed`, `ssh`, `git`, `rust`) and the content differs, they're replaced, with a timestamped backup kept next to each copied file. Make changes in `files/` in this repo, not in the apps, or turn the matching `configure_*` setting off.
 
-macOS and system settings (`macos` tag, plus `touchid`, `timemachine` and `spotlight`):
+macOS and system settings (`macos` tag, plus `touchid`, `timemachine`, `spotlight` and `links`):
 
   - Dock auto-hides with no delay and a fast animation
   - Dock icons magnify slightly on hover, and no recent apps section
@@ -129,6 +129,7 @@ macOS and system settings (`macos` tag, plus `touchid`, `timemachine` and `spotl
   - Siri turned off (and hidden from the menu bar), and Apple Intelligence opted out
   - Touch ID for `sudo` (via `/etc/pam.d/sudo_local`, which survives macOS updates)
   - Time Machine skips rebuildable files: [asimov](https://github.com/AsimovMac/asimov) excludes project folders (`node_modules`, Rust `target`, `.venv`, .NET `bin`/`obj`) and common caches daily, and Rust/bun/uv toolchain folders are excluded directly
+  - `~/NTP` links to the work repos on the `secrets` drive (`NTP/repos`); set more in `home_links`
   - Spotlight doesn't index `/Volumes/secrets` (the setting is stored on the drive; only applied while it's mounted)
   - Removes Apple's GarageBand (and its sound library), iMovie, Keynote, Numbers and Pages if present. On a new Mac the App Store installs these in the background after you first log in, so if they show up after the first run, run `ansible-playbook main.yml --tags macos` again. Built-in apps in `/System/Applications` (Safari, Music, News, etc.) are protected by macOS and can't be removed.
 
@@ -144,7 +145,7 @@ Some things can't be automated reliably, so do these by hand after the playbook 
   - **Open at login:** turn on launch at login for Stats, Bitwarden, Tailscale and OrbStack (in each app's settings, or System Settings > General > Login Items).
   - **Sign in:** Steam, Discord, Tailscale, and JetBrains (Rider and WebStorm; turn on Settings Sync to restore IDE settings).
   - **Time Machine:** System Settings > General > Time Machine > Add Backup Disk.
-  - **Repos:** the work repos live on the `secrets` drive in `NTP/repos` (personal ones in `Personal/repos`), with the data they use in `NTP/data` (the `CYCLONE_*` variables in `config.fish` point there). Open them from the drive; run `bun install` or `cargo build` in each first, since `node_modules` and Rust `target` folders weren't copied.
+  - **Repos:** the work repos live on the `secrets` drive in `NTP/repos` (personal ones in `Personal/repos`), with the data they use in `NTP/data` (the `CYCLONE_*` variables in `config.fish` point there). Open them from the drive (`~/NTP` links there); run `bun install` or `cargo build` in each first, since `node_modules` and Rust `target` folders weren't copied.
   - **Spotlight on the dev drive:** if `/Volumes/secrets` wasn't plugged in during setup, plug it in and run `ansible-playbook main.yml --tags spotlight` once.
   - **Lightroom Classic:** sign in to Adobe Creative Cloud and install it from there.
   - **Microsoft Office:** open Word (or any Office app) and sign in with your Microsoft 365 account to activate the suite.

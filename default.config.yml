@@ -100,6 +100,12 @@ configure_spotlight: true
 spotlight_disabled_volumes:
   - /Volumes/secrets
 
+# Shortcuts in the home folder (~/<name>) to folders on the dev drive.
+configure_home_links: true
+home_links:
+  - name: NTP
+    src: /Volumes/secrets/NTP/repos
+
 configure_sudoers: false
 sudoers_custom_config: ""
 # Example:

@@ -102,6 +102,10 @@
       when: configure_spotlight
       tags: ['spotlight']
 
+    - import_tasks: tasks/links.yml
+      when: configure_home_links
+      tags: ['links']
+
     - import_tasks: tasks/extra-packages.yml
       tags: ['extra-packages']
 
